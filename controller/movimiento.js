@@ -116,6 +116,7 @@ const getMovimientos = async (req, res = response)  => {
 const registrarMovimiento = async (req, res = response ) => {
     try {
         const movimiento = new Movimientos(req.body);
+        movimiento.fchHra = Date.now()
         await movimiento.save();
         return res.status(200).json({
             ok: true,
