@@ -9,7 +9,7 @@ const Paises = require('../models/paises');
 
 const getMovimientos = async (req, res = response)  => {
     
-    const {fchDesde, fchHasta, idUsuario = "" } = req.body;
+    let {fchDesde, fchHasta, idUsuario = "" } = req.body;
 
     try {
         if(fchDesde==='' || fchHasta===''){
@@ -19,6 +19,8 @@ const getMovimientos = async (req, res = response)  => {
             });
         }else{
             var movimientos;
+            fchDesde = fchDesde + " 00:00:00";
+            fchHasta = fchHasta + " 23:59:59";
             if(idUsuario==""){
                 movimientos = await Movimientos.find({fchHra:{$gte:fchDesde,$lte:fchHasta}})
                 .populate('idUsuario', 'nombre idUsuario')
@@ -39,15 +41,15 @@ const getMovimientos = async (req, res = response)  => {
                     var impMovNoMerc = 0;
                     movimientos.forEach((movimiento)=>{
                         if(movimiento.tipoIngreso==1){
-                            cantMovLocal++;
+                            cantMovLocal+=movimiento.cantidad;
                             impMovLocal += movimiento.importe;
                         }
                         if(movimiento.tipoIngreso==2){
-                            cantMovMerc++;
+                            cantMovMerc+=movimiento.cantidad;
                             impMovMerc += movimiento.importe;
                         }
                         if(movimiento.tipoIngreso==3){
-                            cantMovNoMerc++;
+                            cantMovNoMerc+=movimiento.cantidad;
                             impMovNoMerc+=movimiento.importe;
                         }
                     });

@@ -25,6 +25,10 @@ const MovimientoSchema = Schema({
         type: Schema.Types.Date,
         required: true,
         default: Date.now()
+    },
+    cantidad: {
+        type: Schema.Types.Number,
+        required: true,
     }
 },{
     timestamps: true
