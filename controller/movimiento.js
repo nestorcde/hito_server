@@ -3,6 +3,7 @@ const { } = require("mongoose");
 const Movimientos = require('../models/movimiento');
 const Usuario = require('../models/usuario');
 const Paises = require('../models/paises');
+const { DateTime } = require("luxon");
 
 
 
@@ -115,10 +116,79 @@ const getMovimientos = async (req, res = response)  => {
     
 };
 
+const getMovimientosDet = async (req, res = response)  => {
+    
+    let {fchDesde, fchHasta, idUsuario = "" } = req.body;
+
+    try {
+        if(fchDesde==='' || fchHasta===''){
+            res.json({
+                ok:false,
+                msg: "Ingrese rango de fecha"
+            });
+        }else{
+            var movimientos;
+            var detalles = [];
+            var cant = 0;
+            var detalle;
+            fchDesde = fchDesde + " 00:00:00";
+            fchHasta = fchHasta + " 23:59:59";
+            console.log(`fchDesde: ${fchDesde} - fchHasta: ${fchHasta}`);
+            if(idUsuario==""){
+                movimientos = await Movimientos.find({fchHra:{$gte:fchDesde,$lte:fchHasta}})
+                .populate('idUsuario', 'nombre idUsuario')
+                .populate('idPais', 'nombre idPais');
+            }else{
+                movimientos = await Movimientos.find({fchHra:{$gte:fchDesde,$lte:fchHasta}, idUsuario})
+                .populate('idUsuario', 'nombre idUsuario')
+                .populate('idPais', 'nombre idPais');
+            }
+            //{fchHra:{$gte:Date(fchDesde),$lte:Date(fchHasta)}}
+           if(movimientos){
+                movimientos.forEach((movimiento)=>{
+                    cant ++;
+                    const fecha = new Date(movimiento.fchHra).toLocaleString( { timeZone: 'America/Asuncion' });
+                    detalle = {
+                        "num": cant,
+                        "fecha": fecha,
+                        "cantidad": movimiento.cantidad,
+                        "importe": movimiento.importe,
+                        "pais": movimiento.idPais.nombre,
+                        "usuario": movimiento.idUsuario.nombre
+                    };
+                    detalles.push(detalle);
+                });
+                res.json({
+                    ok:true,
+                    msg: "Detalle de movimientos",
+                    detalles
+                });
+           }
+        }
+    } catch (error) {
+        console.log(error);
+        return res.status(401).json({
+            ok: false,
+            msg: 'Hable con el administrador',
+            resumen : {
+                "cantMovLocal": 0,
+                "impMovLocal": 0,
+                "cantMovMerc":0,
+                "impMovMerc": 0,
+                "cantMovNoMerc": 0,
+                "impMovNoMerc": 0
+            }
+        });
+
+    }
+    
+    
+};
+
 const registrarMovimiento = async (req, res = response ) => {
     try {
         const movimiento = new Movimientos(req.body);
-        movimiento.fchHra = Date.now()
+        movimiento.fchHra = Date.now();
         await movimiento.save();
         return res.status(200).json({
             ok: true,
@@ -135,8 +205,13 @@ const registrarMovimiento = async (req, res = response ) => {
     }
 };
 
+function convertTZ(date, tzString) {
+    return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", {timeZone: tzString}));   
+}
+
 
 module.exports = {
     getMovimientos,
-    registrarMovimiento
+    registrarMovimiento,
+    getMovimientosDet
 }

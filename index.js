@@ -38,7 +38,7 @@ app.use('/api/paises', require('./routes/paises'));
 // app.use('/api/mensajes', require('./routes/mensaje'));
 // app.use('/api/turnos', require('./routes/turno'));
 // app.use('/api/profile', require('./routes/profile'));
-
+TZ = 'America/Asuncion';
 
 
 server.listen( process.env.PORT, ( err ) => {
@@ -46,7 +46,6 @@ server.listen( process.env.PORT, ( err ) => {
     if ( err ) throw new Error(err);
 
     console.log('Servidor corriendo en puerto', process.env.PORT );
-
 });
 
 

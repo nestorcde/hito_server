@@ -3,7 +3,7 @@
 //}
 
 const {Router, response} = require('express');
-const { getMovimientos, registrarMovimiento } = require('../controller/movimiento');
+const { getMovimientos, registrarMovimiento, getMovimientosDet } = require('../controller/movimiento');
 const { validarJWT } = require('../middlewares/validar-jwt');
 const router = Router();
 
@@ -11,6 +11,7 @@ const router = Router();
 
 
 router.post('/',validarJWT, getMovimientos);
+router.post('/det',validarJWT, getMovimientosDet);
 router.post('/nuevo',validarJWT,registrarMovimiento);
 
 
