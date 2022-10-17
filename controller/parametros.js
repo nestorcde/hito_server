@@ -49,7 +49,8 @@ const crearParametro = async (req, res = response) => {
                     "nombre": "",
                     "mercosur": false
                 },
-                "uid": ""
+                "uid": "",
+                "ingresoSinImpresora": flase
             },
         });
     }
@@ -100,7 +101,8 @@ const getParametro = async (req, res = response) => {
                         "nombre": "",
                         "mercosur": false
                     },
-                    "uid": ""
+                    "uid": "",
+                    "ingresoSinImpresora": false
                 },
             });
         }
@@ -122,7 +124,8 @@ const getParametro = async (req, res = response) => {
                     "nombre": "",
                     "mercosur": false
                 },
-                "uid": ""
+                "uid": "",
+                "ingresoSinImpresora": false
             },
         });
     }
@@ -134,7 +137,7 @@ const updateParametro = async (req, res = response) => {
 
     try {
 
-        const { uid, precioLocal, plusMercosur, plusNoMercosur, plusFinde, descMenores, descMayores, paises} = req.body;
+        const { uid, precioLocal, plusMercosur, plusNoMercosur, plusFinde, descMenores, descMayores, paises, ingresoSinImpresora} = req.body;
 
         if(precioLocal <= 0 || plusMercosur <= 0 || plusNoMercosur <= 0){
             return res.status(400).json({
@@ -152,6 +155,7 @@ const updateParametro = async (req, res = response) => {
         parametro.descMenores = descMenores;
         parametro.descMayores = descMayores;
         parametro.paises = paises;
+        parametro.ingresoSinImpresora = ingresoSinImpresora;
 
         await parametro.save();
         const pais = await Paises.findById(paises);
@@ -183,7 +187,8 @@ const updateParametro = async (req, res = response) => {
                     "nombre": "",
                     "mercosur": false
                 },
-                "uid": ""
+                "uid": "",
+                "ingresoSinImpresora": false
             },
         });
     }

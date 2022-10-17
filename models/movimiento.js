@@ -3,6 +3,10 @@ const { Schema, model} = require('mongoose');
 
 
 const MovimientoSchema = Schema({
+    idMovimiento: {
+        type: Schema.Types.Number,
+        required: true
+    },
     idUsuario: {
         type: Schema.Types.ObjectId,
         ref: 'Usuario',

@@ -32,6 +32,11 @@ const ParametroSchema = Schema({
         type: Schema.Types.ObjectId,
         ref: 'Paises',
         required: true
+    },
+    ingresoSinImpresora: {
+        type: Schema.Types.Boolean,
+        required: true,
+        default: false
     }
 },{
     timestamps: true

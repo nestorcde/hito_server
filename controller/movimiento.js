@@ -133,7 +133,7 @@ const getMovimientosDet = async (req, res = response)  => {
             var detalle;
             fchDesde = fchDesde + " 00:00:00";
             fchHasta = fchHasta + " 23:59:59";
-            console.log(`fchDesde: ${fchDesde} - fchHasta: ${fchHasta}`);
+            //console.log(`fchDesde: ${fchDesde} - fchHasta: ${fchHasta}`);
             if(idUsuario==""){
                 movimientos = await Movimientos.find({fchHra:{$gte:fchDesde,$lte:fchHasta}})
                 .populate('idUsuario', 'nombre idUsuario')
@@ -150,7 +150,8 @@ const getMovimientosDet = async (req, res = response)  => {
                     const fecha = new Date(movimiento.fchHra).toLocaleString( { timeZone: 'America/Asuncion' });
                     detalle = {
                         "num": cant,
-                        "fecha": fecha,
+                        "movNum": movimiento.idMovimiento,
+                        "fecha": movimiento.fchHra,
                         "cantidad": movimiento.cantidad,
                         "importe": movimiento.importe,
                         "pais": movimiento.idPais.nombre,
@@ -170,14 +171,7 @@ const getMovimientosDet = async (req, res = response)  => {
         return res.status(401).json({
             ok: false,
             msg: 'Hable con el administrador',
-            resumen : {
-                "cantMovLocal": 0,
-                "impMovLocal": 0,
-                "cantMovMerc":0,
-                "impMovMerc": 0,
-                "cantMovNoMerc": 0,
-                "impMovNoMerc": 0
-            }
+            detalles : []
         });
 
     }
@@ -187,13 +181,26 @@ const getMovimientosDet = async (req, res = response)  => {
 
 const registrarMovimiento = async (req, res = response ) => {
     try {
+        var ultMov;
+        try {
+            ultMov = await Movimientos.findOne({}).sort({idMovimiento: -1});
+       } catch (error) {
+           req.body.idMovimiento = 1;
+           console.log(error);
+       }
+
+       if(ultMov){
+           req.body.idMovimiento = ultMov.idMovimiento + 1;
+       }else{
+           req.body.idMovimiento = 1;
+       }
         const movimiento = new Movimientos(req.body);
         movimiento.fchHra = Date.now();
         await movimiento.save();
         return res.status(200).json({
             ok: true,
             msg: 'Movimiento Registrado',
-            fecha: movimiento.fchHra
+            movimiento
         });
     } catch (error) {
         console.log(error);
