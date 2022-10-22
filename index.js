@@ -38,7 +38,7 @@ app.use('/api/paises', require('./routes/paises'));
 // app.use('/api/mensajes', require('./routes/mensaje'));
 // app.use('/api/turnos', require('./routes/turno'));
 // app.use('/api/profile', require('./routes/profile'));
-TZ = 'America/Asuncion';
+process.env.TZ = 'America/Asuncion';
 
 
 server.listen( process.env.PORT, ( err ) => {

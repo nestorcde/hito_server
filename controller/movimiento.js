@@ -151,7 +151,9 @@ const getMovimientosDet = async (req, res = response)  => {
                     detalle = {
                         "num": cant,
                         "movNum": movimiento.idMovimiento,
-                        "fecha": movimiento.fchHra,
+                        "fecha": movimiento.fchHra.toLocaleString('es-PY', {
+                            timeZone: 'America/Asuncion'
+                          }),
                         "cantidad": movimiento.cantidad,
                         "importe": movimiento.importe,
                         "pais": movimiento.idPais.nombre,
